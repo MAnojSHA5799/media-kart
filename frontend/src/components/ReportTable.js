@@ -10,7 +10,7 @@ function ReportTable({ data }) {
   const handleWinnerClick = async (row) => {
     setLoadingEmail(row.email);
     try {
-      const response = await axios.post("http://localhost:4000/api/save-winner", row);
+      const response = await axios.post("https://media-kart.onrender.com/api/save-winner", row);
       if (response.data.success) {
         setSelectedWinners((prev) => [...prev, row.email]);
       } else {

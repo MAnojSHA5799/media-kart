@@ -19,7 +19,7 @@ function Dashboard() {
     formData.append("file", file);
 
     try {
-      const response = await axios.post("http://localhost:4000/api/upload", formData, {
+      const response = await axios.post("https://media-kart.onrender.com/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setReport(response.data.data);
@@ -31,7 +31,7 @@ function Dashboard() {
 
   const handleSelectWinner = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/api/select-winner", {
+      const response = await axios.post("https://media-kart.onrender.com/api/select-winner", {
         candidates: report,
       });
       console.log(response.data)

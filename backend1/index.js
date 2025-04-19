@@ -8,7 +8,7 @@ const app = express();
 const port = 4000;
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://media-kart.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true
