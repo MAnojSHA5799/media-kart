@@ -16,15 +16,16 @@ app.use(cors({
 
 app.use(express.json());
 
-// ✅ Create "uploads" and "data" folders if not exists
+// Create "uploads" and "data" folders if not exists
 if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }
 if (!fs.existsSync('data')) {
   fs.mkdirSync('data');
 }
+const winnersPath = path.join(__dirname, 'data', 'winner.json');
 
-// ✅ Multer file upload setup
+// Multer file upload setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -35,21 +36,28 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ✅ In-memory winner tracking
+// In-memory winner tracking
 let winners = [];
 let previousWinners = [];
 
-// ✅ Admin login route
+// Admin login route
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (username === 'admin' && password === 'admin123') {
+    if (fs.existsSync(winnersPath)) {
+      try {
+        fs.unlinkSync(winnersPath);
+      } catch (error) {
+        // do nothing
+      }
+    }
     res.json({ success: true });
   } else {
     res.status(401).json({ success: false, message: 'Invalid credentials' });
   }
 });
 
-// ✅ File upload and CSV parsing route
+// File upload and CSV parsing route
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
@@ -72,30 +80,37 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 
 app.post('/api/select-winner', (req, res) => {
   const { candidates } = req.body;
+  if(fs.existsSync(winnersPath)) {
+    try {
+      const fileData = fs.readFileSync(winnersPath, 'utf-8');
+      previousWinners = JSON.parse(fileData);
+    } catch (error) {
+      previousWinners = []
+    }
 
-  const available = candidates.filter(
-    candidate => !previousWinners.includes(candidate.name)
-  );
-
-  if (available.length === 0) {
-    return res.status(400).json({ message: 'No candidates left' });
   }
+  // const available = candidates.filter(
+  //   candidate => !previousWinners.includes(candidate.name)
+  // );
 
-  const winner = available[Math.floor(Math.random() * available.length)];
-  winners.push(winner);
-  previousWinners.push(winner.name);
+  // if (available.length === 0) {
+  //   return res.status(400).json({ message: 'No candidates left' });
+  // }
 
-  res.json({ winner });
+  // const winner = available[Math.floor(Math.random() * available.length)];
+  // winners.push(winner);
+  // previousWinners.push(winner.name);
+
+  res.json(previousWinners);
 });
-
-const winnersPath = path.join(__dirname, 'data', 'winner.json');
 
 app.post('/api/save-winner', (req, res) => {
   const newWinner = req.body;
-
+  console.log({winnersPath})
   let savedWinners = [];
   if (fs.existsSync(winnersPath)) {
     const fileData = fs.readFileSync(winnersPath, 'utf-8');
+    console.log({fileData})
     if (fileData.trim() !== '') {
       try {
         savedWinners = JSON.parse(fileData);
@@ -104,7 +119,7 @@ app.post('/api/save-winner', (req, res) => {
       }
     }
   }
-
+  console.log("line no 108", {savedWinners, newWinner});
   const alreadySelected = savedWinners.some(
     (w) => w.email === newWinner.email
   );

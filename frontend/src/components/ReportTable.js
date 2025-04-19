@@ -27,21 +27,25 @@ function ReportTable({ data }) {
   return (
     <div className="table-responsive mt-4">
       <table className="table table-bordered table-striped">
-        <thead className="table-dark">
-          <tr>
-            {headers.map((header, idx) => (
-              <th key={idx}>{header}</th>
-            ))}
-            <th>Action</th>
-          </tr>
+        <thead className="table-dark text-center">
+        <tr>
+        {headers.map((header, idx) => (
+  <th key={idx}>
+    {header.charAt(0).toUpperCase() + header.slice(1)}
+  </th>
+))}
+
+    <th>Action</th> 
+  </tr>
         </thead>
-        <tbody>
+        <tbody className="text-center">
           {data.map((row, idx) => {
             const isSelected = selectedWinners.includes(row.email);
             return (
               <tr key={idx}>
                 {headers.map((header, hIdx) => (
                   <td key={hIdx}>{row[header]}</td>
+                  
                 ))}
                 <td>
                   <button
