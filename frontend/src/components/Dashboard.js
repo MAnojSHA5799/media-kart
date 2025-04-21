@@ -6,10 +6,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function Dashboard() {
   const [file, setFile] = useState(null);
   const [report, setReport] = useState([]);
-  const [showWinnerList,setShowWinnerList] = useState(false);
-  const [selectedWinner, setSelectedWinner] = useState(null);
+  
   const [error, setError] = useState("");
-
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -29,20 +27,6 @@ function Dashboard() {
     }
   };
 
-  const handleSelectWinner = async () => {
-    try {
-      const response = await axios.post("https://media-kart.onrender.com/api/select-winner", {
-        candidates: report,
-      });
-      console.log(response.data)
-      setSelectedWinner(response.data);
-      setShowWinnerList(true);
-      setError("");
-    } catch (err) {
-      setError("No more new winners or error");
-    }
-  };
-  console.log(report, selectedWinner)
   return (
     <div className="container mt-5">
       <div className="card p-4 shadow">
@@ -60,25 +44,10 @@ function Dashboard() {
           <button className="btn btn-success" onClick={handleFileUpload} disabled={!file ? true : false}>
             Upload CSV
           </button>
-          {report.length > 0 ? (
-  !showWinnerList ? (
-    <button className="btn btn-primary" onClick={handleSelectWinner}>
-      Selected Winner List
-    </button>
-  ) : (
-    <button className="btn btn-secondary" onClick={() => {
-      setShowWinnerList(false);
-      setSelectedWinner(null); 
-    }}>
-      Close Winner List
-    </button>
-  )
-) : null}
-
         </div>
         {error && <div className="alert alert-danger">{error}</div>}
 
-        <ReportTable data={selectedWinner ? selectedWinner : report} />
+        <ReportTable data={report}/>
       </div>
     </div>
   );

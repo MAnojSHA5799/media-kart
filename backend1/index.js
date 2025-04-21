@@ -9,6 +9,7 @@ const port = 4000;
 
 app.use(cors({
   origin: 'https://media-kart.vercel.app',
+  // origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
   credentials: true
@@ -106,11 +107,9 @@ app.post('/api/select-winner', (req, res) => {
 
 app.post('/api/save-winner', (req, res) => {
   const newWinner = req.body;
-  console.log({winnersPath})
   let savedWinners = [];
   if (fs.existsSync(winnersPath)) {
     const fileData = fs.readFileSync(winnersPath, 'utf-8');
-    console.log({fileData})
     if (fileData.trim() !== '') {
       try {
         savedWinners = JSON.parse(fileData);
@@ -119,7 +118,6 @@ app.post('/api/save-winner', (req, res) => {
       }
     }
   }
-  console.log("line no 108", {savedWinners, newWinner});
   const alreadySelected = savedWinners.some(
     (w) => w.email === newWinner.email
   );
